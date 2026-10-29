@@ -21,10 +21,10 @@ Setup links → README.md, demo/README.md; framing → BUSINESS.md; ground truth
 ### 2 · The data layer, running (90 s)           — name the three layers; open the lineage graph; boxes flash = incremental compute; click a node = running SQL
 ### 3 · A capability already on the layer (2 min) — fire the hero scenario; see threshold tile drop, gauges go red, storm → one incident, triage, brief; "advisory only"
 ### 4 · THE HEART — build a NEW data product, live (4 min) — scenario in a sentence; + Data product → prefilled SELECT → Create; compiling→running in seconds; prove it: reset → fire → new trigger flashes
-### 5 · The control that makes that safe (2 min) — additive by construction; single source of truth reused; governed (Event Portal + versioned YAML)
+### 5 · The control that makes that safe (2 min) — additive by construction; single source of truth reused; governed (versioned YAML, schema-validated SQL, the base pipeline is never touched)
 ### 6 · Agility and speed, named (90 s)           — runtime ms/event; build time minutes; close
-## Recovery                           (table: symptom → do; include the cold-compile, stale product, slow triage = external latency, hero stuck RED → make reset, no decision → check ops + SAM, pipeline not Running, EP objects missing)
-## Likely questions                   (8–12 Q&A pairs: "already handled by existing programs?", "vs <vertical's incumbent AI>?", "rip-and-replace?", "how is the live build that fast?", "can't Flink/lakehouse?", "does the fast path have to be an LLM?", "is it taking the action itself?", "how real is the data?", "governance?", "could a domain team do this?")
+## Recovery                           (table: symptom → do; include the cold-compile, stale product, slow triage = external latency, hero stuck RED → make reset, no decision → check ops + SAM, pipeline not Running)
+## Likely questions                   (8–12 Q&A pairs: "already handled by existing programs?", "vs <vertical's incumbent AI>?", "rip-and-replace?", "how is the live build that fast?", "can't Flink/lakehouse?", "does the fast path have to be an LLM?", "is it taking the action itself?", "how real is the data?", "governance?" (answer: versioned YAML, SQL validated before deploy, additive products, no Event Portal in this demo), "could a domain team do this?")
 ```
 
 Rules: every **Say:** line is speakable prose, no slide-ese; every **Show:** line names the exact

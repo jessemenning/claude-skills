@@ -15,10 +15,13 @@ own FX ancestor, never re-domained) — delete or regenerate, never re-domain. C
 - FX-era strings survive inside generic code and must be cleaned once (the `fx`/`counterparty`/`exposure`/`venue` scan tokens find them): `continuum-mcp/continuum_mcp/service.py` volatile-column comments, `semp_client.py` header, `decision-proxy/app.py` `X-Title: solace-fx-demo`, `decision-proxy/README.md`, `sam/models/investigation.yaml` description, the `/fx/mqtt` WebSocket route in `stack/api/src/routes/mqtt_proxy.py` (rename to `/ws/mqtt` and update every page, or keep with a comment), `index.html` `*-inflight` element ids.
 - card-testing was forked before the verified-reset work landed in the reference; always scaffold from the reference's current HEAD and record the hash (scaffold.sh writes it into commit 1).
 
+## Event Portal: removed from generated demos
+Delete `ep-mcp-http/`, `demo/register-ep-topology.py`, `demo/register-ep-solution.py`, `sam/skills/solace-event-portal/`, `sam/connectors/event-portal-mcp.yaml`. Remove: the `ep-mcp` service and `CONTINUUM_EP_DOMAIN`/`EP_MCP_*`/`SOLACE_API_TOKEN` from `docker-compose.yml` and `.env.example`; the `register-ep`/`register-ep-solution` targets from the Makefile; the EP step from `demo/new-solution.sh`; the EP connector + skill lines from `sam/manifests/dev.yaml`; `ep_*` tools from `sam/agents/SolutionBuilder.yaml`; `ep_domain` and the registration branch from `continuum-mcp/continuum_mcp/{config,deployer,models}.py` (delete `ep_client.py` and its test); EP links/labels from `continuum-pipeline.html` and the docs; the governance beat's EP mention in the script and deck.
+
 ## 0. Repo skeleton
 | File | Kind | Change |
 |---|---|---|
-| `docker-compose.yml` | G | env defaults: `FELDERA_PIPELINE`, `BASE_PIPELINE`, `CONTINUUM_EP_DOMAIN`, `HERO_*`, scenario knobs; service names stay |
+| `docker-compose.yml` | G | env defaults: `FELDERA_PIPELINE`, `BASE_PIPELINE`, `HERO_*`, scenario knobs; drop the `ep-mcp` service; other service names stay |
 | `docker-compose.cache.yml`, `.gitignore`, `.mcp.json` | G | none |
 | `Makefile` | G | `PIPELINE`/hero strings in `demo`, `reset`, `pipeline-status`, `fq`, `smoketest`, `verify-solution` help text; SAM version vars |
 | `.env.example` | D | rename `HERO_AIRPORT`→`HERO_<ENTITY>` and scenario knobs; keep every platform key |
@@ -69,11 +72,11 @@ D. Keep the skeleton (connect-with-backoff, lock with 8 s timeout, `_abort` even
 | File | Kind | Change |
 |---|---|---|
 | `models/general.yaml`, `models/investigation.yaml` | G | none |
-| `connectors/continuum-mcp.yaml`, `event-portal-mcp.yaml` | G | none |
+| `connectors/continuum-mcp.yaml` | G | none (`event-portal-mcp.yaml` is deleted) |
 | `connectors/event-mesh-publish.yaml` | G | the static `solutions/<slug>/triage` topic |
-| `manifests/dev.yaml` (platform) | G | none unless you drop skills |
+| `manifests/dev.yaml` (platform) | G | remove the Event Portal connector and skill entries |
 | `agents/SolutionBuilder.yaml` | D (examples) | worked examples, `fl/cp/` namespace, entity key |
-| `skills/solution-design/*` (+ `references/worked-example-*.md`), `skills/continuum-data-product/references/*`, `skills/schema-refs/*`, `skills/solace-event-portal/*` | D (examples) / G (rules) | replace the worked example with the new solution; keep rules |
+| `skills/solution-design/*` (+ `references/worked-example-*.md`), `skills/continuum-data-product/references/*`, `skills/schema-refs/*` | D (examples) / G (rules) | replace the worked example with the new solution; keep rules; delete `skills/solace-event-portal/` and any EP step in `solution-design` |
 | `solutions/arrival-capacity/` → `solutions/<slug>/` | D | per the contract table: gateway (subscription, `forwardContext.<entity_key>`, decision/error topics, `successOutput: custom input.payload:data[0]`), workflow (`detection:` policy, 6 questions, `publish_triage`, 3–4 `when`-gated specialists, `brief`, `output_mapping`), decider model (unchanged shape), specialist agents (one `continuum_preview_query` each over an `mcp_*` view), lead briefer (investigation model, JSON brief sections, advisory rule), A/B alternative, `manifests/dev.yaml` |
 | `solutions/wind-arrival-risk/` | D-generated | drop; regenerate the live-build product's solution with `make new-solution` after the stack is up |
 | `scripts/apply.sh`, `deploy-solution.sh` | G | SAM version pin |
@@ -83,7 +86,7 @@ Load-bearing details: the `when:` gate value must be quoted (`'"{{triage.output.
 ## 8. Generation engine — `continuum-mcp/`
 | File | Kind | Change |
 |---|---|---|
-| `continuum_mcp/*.py`, `templates/*.j2`, `Dockerfile`, `pyproject` | G | defaults in `config.py` (`base_pipeline`, `ep_domain`), docstring examples in `server.py` |
+| `continuum_mcp/*.py`, `templates/*.j2`, `Dockerfile`, `pyproject` | G | defaults in `config.py` (`base_pipeline`), docstring examples in `server.py`; remove the EP registration path and `ep_client.py` |
 | `catalog/base/<slug>.yaml` | D | the base views exposed as read-only products |
 | `catalog/streams/*.yaml` | D | raw streams (topic subscriptions, DDL, decode SQL), derived ingestable streams (snapshot / inserts_only), non-ingestable previews; `key_columns`, `event_time_column`, `volatile_columns` |
 | `catalog/products/` | runtime state | leave empty |
@@ -93,8 +96,8 @@ Load-bearing details: the `when:` gate value must be quoted (`'"{{triage.output.
 ## 9. Demo tooling — `demo/`
 | File | Kind | Change |
 |---|---|---|
-| `prewarm.sh`, `continuum-create-product.py`, `continuum-add-trigger.py`, `new-solution.sh`, `check-gateway.py`, `prune-orphan-queues.sh`, `register-ep-solution.py` | G | version pin, key column default |
-| `burst.sh`, `smoketest.py`, `verify-solution.py`, `ops-console.py`, `register-ep-topology.py`, `create-product.py`, `products/<product>.json` | D | topics, hero, env knob names, EP domain and topology |
+| `prewarm.sh`, `continuum-create-product.py`, `continuum-add-trigger.py`, `new-solution.sh`, `check-gateway.py`, `prune-orphan-queues.sh` | G | version pin, key column default; remove the EP step from `new-solution.sh` |
+| `burst.sh`, `smoketest.py`, `verify-solution.py`, `ops-console.py`, `create-product.py`, `products/<product>.json` | D | topics, hero, env knob names (`register-ep-*.py` are deleted) |
 | `README.md`, `doctor.sh`, `live-view.html` | S | regenerate README from the Makefile help; rewrite doctor.sh from `preflight.sh`; delete live-view |
 
 ## 10. Docs and presentation — root

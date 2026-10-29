@@ -18,7 +18,7 @@
       "name": "continuum",
       "source": "./plugins/continuum",
       "description": "Generate a complete Solace fast/slow demo (event mesh -> Continuum data plane -> SAM fast triage + slow brief, presentation UI, data product, speaker notes) from a business use case (/continuum:new-demo)",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "category": "development"
     }
   ]

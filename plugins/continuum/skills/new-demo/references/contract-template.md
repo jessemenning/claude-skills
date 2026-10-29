@@ -38,6 +38,7 @@ shows what is invariant and what is domain.
    specialist agents (each exactly one `continuum_preview_query` over an `mcp_*` view) and one lead
    briefer (stronger model) run only when `action == "ESCALATE"`. The brief is ADVISORY: options,
    tradeoffs, provenance; it never issues the operational action itself.
+   Event Portal is not part of generated demos; governance is versioned YAML + schema-validated SQL.
 8. **Three ways to consume** every data product: events (sinks), MCP (`mcp_*` views the specialists
    query), SQL (ad-hoc). The UI reads only the `mcp_*` and sink views the API exposes.
 9. **Name invariant payload fields so the volatility guard keeps them.** `continuum-mcp`'s
@@ -69,7 +70,6 @@ systems (the analog of SWIM/NEMS or the card network) so the deck can say "you a
 | Entity key column + topic token | `<entity_key>` / `{<entity_key>}` |
 | Hero entity id | `<HERO>` |
 | Static reference set (8–12 entities with display names + 1–2 descriptors) | ... |
-| Event Portal application domain | "<Vertical> <Capability>" |
 | API prefix | `/api/<domain>` |
 
 ## Solace topics

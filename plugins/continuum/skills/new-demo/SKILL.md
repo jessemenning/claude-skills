@@ -36,7 +36,7 @@ Budget: a full run is 2–4 hours of agent time plus one ~7 min cold compile. Sa
    For each key reported MISSING, ask the user in one message what it is for and where to get it:
    - `LLM_SERVICE_ENDPOINT` + `LLM_SERVICE_API_KEY` — the OpenAI-compatible endpoint SAM's agents use (LiteLLM proxy or OpenAI); plus the three model-name slots (general = fast, investigation = Sonnet-class)
    - `OPENAI_DECISION_API_KEY` — an OpenRouter key WITH credit; the fast triage is an OpenAI Decisions node routed through the in-stack proxy
-   - optional: `SOLACE_API_TOKEN` (Event Portal registration), `SOLACE_*` broker overrides
+   - optional: `SOLACE_*` broker overrides
    Then write the new repo's `.env` in Phase 2 with `--set KEY=VALUE … --save-secrets` so the next
    demo asks nothing. `.env` is gitignored and mode 600; never echo a value, never commit one.
 4. **Name it.** Slug = kebab noun phrase of the capability (`arrival-capacity`, `card-testing`,
@@ -61,7 +61,9 @@ bash "${CLAUDE_SKILL_DIR}/scripts/scaffold.sh" <reference> <target> <slug> \
   --drop sam/solutions/wind-arrival-risk --drop demo/live-view.html --drop sam/scripts/run-docker.sh \
   --drop sam/scripts/run-embedded.sh --drop sam/scripts/undeploy-reference.sh --drop sam/README.md \
   --drop sam/.env.template --drop PACKAGING.md --drop DESIGN-fast-slow-investigation.md \
-  --drop EVAL-openai-decision-model.md --drop SHIFT_TO_PREDICTIVE.md --drop CEO-VIDEO-SCRIPT.md
+  --drop EVAL-openai-decision-model.md --drop SHIFT_TO_PREDICTIVE.md --drop CEO-VIDEO-SCRIPT.md \
+  --drop ep-mcp-http --drop demo/register-ep-topology.py --drop demo/register-ep-solution.py \
+  --drop sam/skills/solace-event-portal --drop sam/connectors/event-portal-mcp.yaml
 cp REDOMAIN-CONTRACT.md <target>/ && python3 "${CLAUDE_SKILL_DIR}/scripts/collect_env.py" <target> --reuse <reference>/.env [--set …] --save-secrets
 ```
 The scaffold's first commit is the untouched copy, so `git diff <scaffold-commit>` is the complete
@@ -85,8 +87,13 @@ re-domain record. Commit after every layer below with conventional messages.
 4. **SAM and the generation engine.** The solution directory per the contract table; platform
    connector topic; builder/skills worked examples; continuum-mcp catalog + golden tests
    (`uv run pytest -q` inside `continuum-mcp/`); the product JSON for the live-build beat.
-5. **Demo tooling.** Rewrite `smoketest.py`, `verify-solution.py`, `ops-console.py`, `burst.sh`,
-   `register-ep-*.py`; regenerate `demo/README.md`; replace `doctor.sh` with a thin wrapper around
+   **No Event Portal**: remove the `ep-mcp` service from compose, the `register-ep*` Makefile targets,
+   the EP step in `demo/new-solution.sh`, the EP connector and skill from `sam/manifests/dev.yaml`,
+   the `ep_*` tools from `SolutionBuilder.yaml`, `SOLACE_API_TOKEN`/`EP_MCP_*`/`CONTINUUM_EP_DOMAIN`
+   from `.env.example` and compose, the `ep_domain` default and EP registration path from
+   `continuum-mcp` (`config.py`, `deployer.py`, `ep_client.py`), and every EP link in the UI pages.
+5. **Demo tooling.** Rewrite `smoketest.py`, `verify-solution.py`, `ops-console.py`, `burst.sh`;
+   regenerate `demo/README.md`; replace `doctor.sh` with a thin wrapper around
    this skill's `preflight.sh` logic. Normalise every SAM version pin.
 6. **Docs and presentation.** `CLAUDE.md` (ground truth, keep the rollout procedure and audit notes),
    `README.md`, `BUSINESS.md`, `CUSTOMIZE.md`, `PRESENTATION_SCRIPT.md`, `slides-speaker-notes.md`;
@@ -101,7 +108,9 @@ YAML/py/sql and review the diff of generic code afterwards (a replace-all once r
 the SAM trigger subscribes `incident/`, not `breach/`; generated products live under `fl/cp/`;
 `when:` gate values quoted; `successOutput` is `custom` + `input.payload:data[0]`; publishers send raw
 bytes; UTC timestamps; "Solace Platform", "Continuum", "Agent Mesh" — never the engine's name or
-"PubSub+" in anything user-facing; the brief is advisory and never performs the operational action.
+"PubSub+" in anything user-facing; the brief is advisory and never performs the operational action;
+**Event Portal is out of scope for generated demos** — governance is told through versioned YAML,
+schema-validated SQL and additive-by-construction products, not EP registration.
 
 ## Phase 4 — Bring it up and verify
 
@@ -109,7 +118,7 @@ Run the gates in `verification.md` in order: leftovers, version pins, brand, SQL
 `make demo-ready`, baseline green, `make smoketest`, repeatability (`make reset` → `make demo`), the
 live-build beat (`make create-product` / `make new-solution`), `/feldera:audit <target>`, the two
 `?tv=1` pages, docs cross-check. Fix and re-run until every gate passes or is explicitly SKIPPED with
-the reason (no credit on the decisions key, no Event Portal token). Never report a skipped gate as
+the reason (for example no credit on the decisions key). Never report a skipped gate as
 passed.
 
 ## Phase 5 — Hand over
@@ -126,4 +135,4 @@ GitHub repo (creating a public repo needs the user's explicit instruction).
 | `scripts/collect_env.py <repo> [--reuse other/.env] [--set K=V] [--save-secrets]` | build `.env` from example + reuse + user-level secrets; lists MISSING required keys; never prints values |
 | `scripts/scaffold.sh <ref> <target> <slug> [--drop path…]` | copy, drop stale files, fresh git repo with the untouched copy as commit 1 |
 | `scripts/domain_scan.py <dir> --tokens a,b [--allow …]` | leftover-identifier gate |
-| `scripts/env_consistency.py <repo>` | env vars read by the stack are declared in compose/.env.example; one Event Portal domain string |
+| `scripts/env_consistency.py <repo>` | env vars read by the stack are declared in compose/.env.example; scenario knobs in compose are actually read |

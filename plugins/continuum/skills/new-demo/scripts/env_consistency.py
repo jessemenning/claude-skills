@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Check scenario/feed environment knobs line up between the Python that reads them and the files
-that declare them, and that the Event Portal domain name has one value across the repo.
+that declare them, 
 
 Failures (exit 1):
   - a variable read WITHOUT an in-code default (environ["X"] / environ.get("X")) that compose and
@@ -8,7 +8,6 @@ Failures (exit 1):
   - a knob declared in the `scenario:` or `feed:` service environment (docker-compose.yml) that no
     Python under stack/scenario or stack/feed reads — the card-testing bug: compose set
     ATTACK_ATTEMPTS/ATTACK_MERCHANTS while scenario_driver.py read ATTACK_COUNT/ATTACK_CARDS
-  - more than one Event Portal domain string
 Notes (exit 0): variables read with a default that are not declared anywhere (undocumented knobs).
 Usage: env_consistency.py <repo>
 """
@@ -49,13 +48,5 @@ for svc in ("scenario", "feed"):
     for name in sorted(svc_env.get(svc, set())):
         if name not in read_names and not name.startswith(("SOLACE_", "FL_", "LOG_")):
             print(f"FAIL  compose declares {name} for service '{svc}' but nothing under stack/{svc} reads it"); bad += 1
-vals = set()
-m = re.search(r"CONTINUUM_EP_DOMAIN=\$\{CONTINUUM_EP_DOMAIN:-([^}]+)\}", compose) or re.search(r"CONTINUUM_EP_DOMAIN=([^$\n]+)$", compose, re.M)
-if m: vals.add(m.group(1).strip())
-m = re.search(r"^CONTINUUM_EP_DOMAIN=(.+)$", envex, re.M)
-if m and m.group(1).strip(): vals.add(m.group(1).strip())
-m = re.search(r"""ep_domain:\s*str\s*=\s*Field\(\s*["']([^"']+)["']""", read(os.path.join(repo, "continuum-mcp/continuum_mcp/config.py")))
-if m: vals.add(m.group(1).strip())
-if len(vals) > 1: print("FAIL  Event Portal domain has several values:", sorted(vals)); bad += 1
 print("env consistency:", "OK" if not bad else f"{bad} failure(s)")
 sys.exit(1 if bad else 0)
