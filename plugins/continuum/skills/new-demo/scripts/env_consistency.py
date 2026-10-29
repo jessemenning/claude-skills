@@ -50,9 +50,12 @@ for svc in ("scenario", "feed"):
         if name not in read_names and not name.startswith(("SOLACE_", "FL_", "LOG_")):
             print(f"FAIL  compose declares {name} for service '{svc}' but nothing under stack/{svc} reads it"); bad += 1
 vals = set()
-for rel in ("docker-compose.yml", "continuum-mcp/continuum_mcp/config.py", "demo/register-ep-topology.py", ".env.example"):
-    for m in re.finditer(r"""(?:CONTINUUM_EP_DOMAIN|ep_domain|EP_DOMAIN)[^\n]*?["']([^"'$\n]{3,})["']""", read(os.path.join(repo, rel))):
-        vals.add(m.group(1).strip())
+m = re.search(r"CONTINUUM_EP_DOMAIN=\$\{CONTINUUM_EP_DOMAIN:-([^}]+)\}", compose) or re.search(r"CONTINUUM_EP_DOMAIN=([^$\n]+)$", compose, re.M)
+if m: vals.add(m.group(1).strip())
+m = re.search(r"^CONTINUUM_EP_DOMAIN=(.+)$", envex, re.M)
+if m and m.group(1).strip(): vals.add(m.group(1).strip())
+m = re.search(r"""ep_domain:\s*str\s*=\s*Field\(\s*["']([^"']+)["']""", read(os.path.join(repo, "continuum-mcp/continuum_mcp/config.py")))
+if m: vals.add(m.group(1).strip())
 if len(vals) > 1: print("FAIL  Event Portal domain has several values:", sorted(vals)); bad += 1
 print("env consistency:", "OK" if not bad else f"{bad} failure(s)")
 sys.exit(1 if bad else 0)

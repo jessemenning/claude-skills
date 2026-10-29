@@ -1,7 +1,7 @@
 {
   "name": "continuum",
   "description": "Solace Continuum fast/slow demo tooling: /continuum:new-demo turns a business use case into a complete, runnable fast/slow demo (Solace event mesh -> Continuum data plane -> SAM fast triage + slow investigation), with a presentation UI, data product, speaker notes, runtime pulls and credential prompts.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": { "name": "Jesse Menning" },
   "keywords": ["solace", "continuum", "feldera", "sam", "demo", "fast-slow"]
 }
