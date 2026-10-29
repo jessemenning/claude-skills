@@ -1,0 +1,14 @@
+{
+  "name": "jessemenning",
+  "owner": { "name": "Jesse Menning" },
+  "metadata": { "description": "Claude Code plugins for Solace Platform + Feldera (Continuum) work" },
+  "plugins": [
+    {
+      "name": "feldera",
+      "source": "./plugins/feldera",
+      "description": "Audit a Feldera SQL pipeline for efficiency and bounded state, verified against the compiled dataflow and the live circuit profile (/feldera:audit)",
+      "version": "0.1.0",
+      "category": "development"
+    }
+  ]
+}

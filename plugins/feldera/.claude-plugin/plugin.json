@@ -1,0 +1,7 @@
+{
+  "name": "feldera",
+  "description": "Feldera pipeline tooling: /feldera:audit reviews a SQL program against Feldera best practices and proves state findings with the compiler's dataflow graph and the runtime circuit profile.",
+  "version": "0.1.0",
+  "author": { "name": "Jesse Menning" },
+  "keywords": ["feldera", "sql", "streaming", "audit", "continuum"]
+}
