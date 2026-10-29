@@ -1,12 +1,23 @@
 {
   "name": "jessemenning",
-  "owner": { "name": "Jesse Menning" },
-  "metadata": { "description": "Claude Code plugins for Solace Platform + Feldera (Continuum) work" },
+  "owner": {
+    "name": "Jesse Menning"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for Solace Platform + Feldera (Continuum) work"
+  },
   "plugins": [
     {
       "name": "feldera",
       "source": "./plugins/feldera",
       "description": "Audit a Feldera SQL pipeline for efficiency and bounded state, verified against the compiled dataflow and the live circuit profile (/feldera:audit)",
+      "version": "0.1.0",
+      "category": "development"
+    },
+    {
+      "name": "continuum",
+      "source": "./plugins/continuum",
+      "description": "Generate a complete Solace fast/slow demo (event mesh -> Continuum data plane -> SAM fast triage + slow brief, presentation UI, data product, speaker notes) from a business use case (/continuum:new-demo)",
       "version": "0.1.0",
       "category": "development"
     }
